@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<!-- cut here to insert into an existing page -->
+		<!-- initial code by KJ7SNW -->
+		<style>
+			div.greyGridTable {
+				border: 2px solid #FFFFFF;
+				width: 100%;
+				text-align: center;
+				border-collapse: collapse;
+			}
+			.divTable.greyGridTable .divTableCell, .divTable.greyGridTable .divTableHead {
+				border: 1px solid #FFFFFF;
+				padding: 3px 4px;
+			}
+			.divTable.greyGridTable .divTableBody .divTableCell {
+				font-size: 13px;
+			}
+			.divTable.greyGridTable .divTableCell:nth-child(odd) {
+				background: #EBEBEB;
+			}
+			.divTable.greyGridTable .divTableHeading {
+				background: #FFFFFF;
+				border-bottom: 2px solid #333333;
+			}
+			.divTable.greyGridTable .divTableHeading .divTableHead {
+				font-size: 15px;
+				font-weight: bold;
+				color: #333333;
+				text-align: center;
+			}
+			.greyGridTable .tableFootStyle {
+				font-size: 14px;
+			}
+			/* DivTable.com */
+			.divTable{ display: table; }
+			.divTableRow { display: table-row; }
+			.divTableHeading { display: table-header-group;}
+			.divTableCell, .divTableHead { display: table-cell;}
+			.divTableHeading { display: table-header-group;}
+			.divTableFoot { display: table-footer-group;}
+			.divTableBody { display: table-row-group;}
+			.divTableFootTotal { border: 4px solid #333333; }
+		</style>
+	</head>
+	<body>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+		<script>
+			var velocityFactor = .93;
+			var isMetric = true;
+			
+			$( "document" ).ready(function() {
+				$( "#currResFreq" ).change(function() {
+					calculateValues();
+				});
+				
+				$('#desiredResFreq').change(function () {
+					calculateValues();
+				});
+				
+				$('#velocityFactor').change(function () {
+					velocityFactor = $(this).val();
+					calculateValues();
+				});
+				
+				$('#imperial').change(function () {
+					isMetric = false;
+					calculateValues();
+					updateLabels();
+				});
+				
+				$('#metric').change(function () {
+					isMetric = true;
+					calculateValues();
+					updateLabels();
+				});
+			});
+			
+			function updateLabels() {
+				if (isMetric) {
+					$('#quarterLabel').html("&frac14; λ (Meters)");
+					$('#lengthLabel').html("Length (cm)");
+					$('#wavelengthLabel').html("λ (Meters)");
+				} else {
+					$('#quarterLabel').html("&frac14; λ (Feet)");
+					$('#lengthLabel').html("Length (inches)");
+					$('#wavelengthLabel').html("λ (Feet)");
+				}
+			}
+			
+			function calculateValues() {
+				currLength = 0;
+				desLength = 0;
+				if($( "#currResFreq" ).val() != '') {
+					currWavLen = calculateWaveLength($("#currResFreq").val());
+					currQuarWavLen = calculateQuarterWavelength(currWavLen);
+					currLength = calculateLength(currQuarWavLen);
+					
+					//$('#currFreq').text($("#currResFreq").val());
+					$('#currWavelength').text(currWavLen);
+					$('#currQuarWavelength').text(currQuarWavLen);
+					$('#currLength').text(currLength);
+				} else {
+					$('#currWavelength').text("");
+					$('#currQuarWavelength').text("");
+					$('#currLength').text("");
+				}
+				
+				if ($('#desiredResFreq').val() != '') {
+					desiredWavLen = calculateWaveLength($('#desiredResFreq').val());
+					desQuarWavLen = calculateQuarterWavelength(desiredWavLen);
+					desLength = calculateLength(desQuarWavLen);
+					
+					//$('#desFreq').text($('#desiredResFreq').val());
+					$('#desWavelength').text(desiredWavLen);
+					$('#desQuarWavelength').text(desQuarWavLen);
+					$('#desLength').text(desLength);
+				} else {
+					$('#desWavelength').text("");
+					$('#desQuarWavelength').text("");
+					$('#desLength').text("");
+				}
+				
+				if($( "#currResFreq" ).val() != '' &&  $('#desiredResFreq').val() != '') {
+					$('#totals').show();
+					delta = calculateDelta(currLength, desLength);
+					if (delta < 0) {
+						$('#deltaLabel').text("Cut");
+					} else {
+						$('#deltaLabel').text("Add");
+					}
+					$('#deltaLength').text(Math.abs(delta));
+				} else {
+					$('#totals').hide();
+				}
+			}
+			
+			function calculateWaveLength(frequency){
+				var val;
+				if (isMetric) {
+					val = 300/frequency;
+				} else {
+					val = 468/frequency;
+				}
+				return val.toFixed(2);
+			}
+			
+			function calculateQuarterWavelength(wavelength){
+				if (isMetric) {
+					return (wavelength/4).toFixed(2);
+				} else {
+					return (wavelength*3.28084/4).toFixed(2);
+				}
+			}
+			
+			function calculateLength(quarterWaveLength){
+				if (isMetric){
+					return ((quarterWaveLength * velocityFactor)*100).toFixed(2);
+				} else {
+					return ((quarterWaveLength * velocityFactor)*12).toFixed(2);
+				}
+			}
+			
+			function calculateDelta(currLength, desiredLength) {
+				return (desiredLength - currLength).toFixed(2);
+			}
+			
+		</script>
+		<div style="width: 400px;">
+			<div>
+				<div style="float: left;">
+					<label for="velocityFactor">Velocity Factor</label>
+					<input type="input" id="velocityFactor" size="4" value=".93">
+				</div>
+				<div style="float: right;">
+					<input type="radio" id="metric" name="unitType" checked="true"> <label for="Metric">Metric</label>
+					<input type="radio" id="imperial" name="unitType"> <label for="Metric">Imperial</label>
+				</div>
+			</div>
+			
+			
+			<div id="data">
+				<div class="divTable greyGridTable">
+					<div class="divTableHeading">
+						<div class="divTableRow">
+							<div class="divTableHead" style="border: none;">&nbsp;</div>
+							<div class="divTableHead">&#402; MHz</div>
+							<div class="divTableHead" id="wavelengthLabel">λ (Meters)</div>
+							<div class="divTableHead" id="quarterLabel">&frac14; λ (Meters)</div>
+							<div class="divTableHead" id="lengthLabel">Length (cm)</div>
+						</div>
+					</div>
+					<div class="divTableBody">
+						<div class="divTableRow">
+							<div class="divTableCell" style="background-color: white;">Current</div>
+							<div class="divTableCell" id="currFreq"><input type="text" id="currResFreq" size="8"></div>
+							<div class="divTableCell" id="currWavelength">&nbsp;</div>
+							<div class="divTableCell" id="currQuarWavelength">&nbsp;</div>
+							<div class="divTableCell" id="currLength">&nbsp;</div>
+						</div>
+						<div class="divTableRow">
+							<div class="divTableCell" style="background-color: white;">Desired</div>
+							<div class="divTableCell" id="desFreq"><input type="text" id="desiredResFreq" size="8"></div>
+							<div class="divTableCell" id="desWavelength">&nbsp;</div>
+							<div class="divTableCell" id="desQuarWavelength">&nbsp;</div>
+							<div class="divTableCell" id="desLength">&nbsp;</div>
+						</div>
+					</div>
+					<div class="divTableFoot tableFootStyle" id="totals" style="display: none;">
+						<div class="divTableRow">
+							<div class="divTableCell" style="background-color: white;">&nbsp;</div>
+							<div class="divTableCell">&nbsp;</div>
+							<div class="divTableCell" style="background-color: white;">&nbsp;</div>
+							<div class="divTableCell divTableFootTotal" id="deltaLabel">&nbsp;</div>
+							<div class="divTableCell divTableFootTotal" id="deltaLength">&nbsp;</div>
+						</div>
+					</div>
+						
+				</div>
+			</div>
+		</div>
+		<!--end cut section -->
+	</body>
+</html>
