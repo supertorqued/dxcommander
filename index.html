@@ -47,94 +47,92 @@
 		</style>
 	</head>
 	<body>
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 		<script>
 			var velocityFactor = .93;
 			var isMetric = true;
 			
-			$( "document" ).ready(function() {
-				$( "#currResFreq" ).change(function() {
+			
+			window.onload = function () {
+				document.getElementById("currResFreq").addEventListener('change', function () {
 					calculateValues();
-				});
+				}, true);
 				
-				$('#desiredResFreq').change(function () {
-					calculateValues();
-				});
+				document.getElementById('desiredResFreq').addEventListener('change', function () {
+					calculateValues()
+				}, true);
 				
-				$('#velocityFactor').change(function () {
-					velocityFactor = $(this).val();
-					calculateValues();
-				});
+				document.getElementById('velocityFactor').addEventListener('change', function () {
+					velocityFactor = document.getElementById('velocityFactor').value;
+					calculateValues()
+				}, true);
 				
-				$('#imperial').change(function () {
+				document.getElementById('imperial').addEventListener('change', function () {
 					isMetric = false;
 					calculateValues();
 					updateLabels();
-				});
+				}, true);
 				
-				$('#metric').change(function () {
+				document.getElementById('metric').addEventListener('change', function () {
 					isMetric = true;
 					calculateValues();
 					updateLabels();
-				});
-			});
+				}, true);
+			}
 			
 			function updateLabels() {
 				if (isMetric) {
-					$('#quarterLabel').html("&frac14; λ (Meters)");
-					$('#lengthLabel').html("Length (cm)");
-					$('#wavelengthLabel').html("λ (Meters)");
+					document.getElementById('quarterLabel').innerHTML = "&frac14; λ (Meters)";
+					document.getElementById('lengthLabel').innerHTML = "Length (cm)";
+					document.getElementById('wavelengthLabel').innerHTML = "λ (Meters)";
 				} else {
-					$('#quarterLabel').html("&frac14; λ (Feet)");
-					$('#lengthLabel').html("Length (inches)");
-					$('#wavelengthLabel').html("λ (Feet)");
+					document.getElementById('quarterLabel').innerHTML = "&frac14; λ (Feet)";
+					document.getElementById('lengthLabel').innerHTML = "Length (inches)";
+					document.getElementById('wavelengthLabel').innerHTML = "λ (Feet)";
 				}
 			}
 			
 			function calculateValues() {
 				currLength = 0;
 				desLength = 0;
-				if($( "#currResFreq" ).val() != '') {
-					currWavLen = calculateWaveLength($("#currResFreq").val());
+				if(document.getElementById( "currResFreq" ).value != '') {
+					currWavLen = calculateWaveLength(document.getElementById( "currResFreq" ).value);
 					currQuarWavLen = calculateQuarterWavelength(currWavLen);
 					currLength = calculateLength(currQuarWavLen);
 					
-					//$('#currFreq').text($("#currResFreq").val());
-					$('#currWavelength').text(currWavLen);
-					$('#currQuarWavelength').text(currQuarWavLen);
-					$('#currLength').text(currLength);
+					document.getElementById('currWavelength').innerHTML = currWavLen;
+					document.getElementById('currQuarWavelength').innerHTML = currQuarWavLen;
+					document.getElementById('currLength').innerHTML = currLength;
 				} else {
-					$('#currWavelength').text("");
-					$('#currQuarWavelength').text("");
-					$('#currLength').text("");
+					document.getElementById('currWavelength').innerHTML = "";
+					document.getElementById('currQuarWavelength').innerHtml = "";
+					document.getElementById('currLength').innerHtml = "";
 				}
 				
-				if ($('#desiredResFreq').val() != '') {
-					desiredWavLen = calculateWaveLength($('#desiredResFreq').val());
+				if (document.getElementById('desiredResFreq').value != '') {
+					desiredWavLen = calculateWaveLength(document.getElementById('desiredResFreq').value);
 					desQuarWavLen = calculateQuarterWavelength(desiredWavLen);
 					desLength = calculateLength(desQuarWavLen);
 					
-					//$('#desFreq').text($('#desiredResFreq').val());
-					$('#desWavelength').text(desiredWavLen);
-					$('#desQuarWavelength').text(desQuarWavLen);
-					$('#desLength').text(desLength);
+					document.getElementById('desWavelength').innerHTML = desiredWavLen;
+					document.getElementById('desQuarWavelength').innerHTML = desQuarWavLen;
+					document.getElementById('desLength').innerHTML =desLength;
 				} else {
-					$('#desWavelength').text("");
-					$('#desQuarWavelength').text("");
-					$('#desLength').text("");
+					document.getElementById('desWavelength').innerHTML = "";
+					document.getElementById('desQuarWavelength').innerHTML = "";
+					document.getElementById('desLength').innerHTML = "";
 				}
 				
-				if($( "#currResFreq" ).val() != '' &&  $('#desiredResFreq').val() != '') {
-					$('#totals').show();
+				if(document.getElementById( "currResFreq" ).value != '' &&  document.getElementById('desiredResFreq').value != '') {
+					document.getElementById('totals').style.display = ""
 					delta = calculateDelta(currLength, desLength);
 					if (delta < 0) {
-						$('#deltaLabel').text("Cut");
+						document.getElementById('deltaLabel').innerHTML = "Cut";
 					} else {
-						$('#deltaLabel').text("Add");
+						document.getElementById('deltaLabel').innerHTML = "Add";
 					}
-					$('#deltaLength').text(Math.abs(delta));
+					document.getElementById('deltaLength').innerHTML = Math.abs(delta);
 				} else {
-					$('#totals').hide();
+					document.getElementById('totals').style.display = 'none';
 				}
 			}
 			
